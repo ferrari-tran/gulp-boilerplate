@@ -1,0 +1,33 @@
+{
+  "name": "gulp-boilerplate",
+  "version": "1.0.0",
+  "description": "New boilerplate to create landing page with gulp",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/mizuneko86/gulp-boilerplate.git"
+  },
+  "keywords": [
+    "boilerplate",
+    "gulp",
+    "landing",
+    "pages",
+    "boilerplate"
+  ],
+  "author": "Thuy Tran Phuong",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mizuneko86/gulp-boilerplate/issues"
+  },
+  "homepage": "https://github.com/mizuneko86/gulp-boilerplate#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "yargs": "^10.1.1"
+  },
+  "dependencies": {
+    "browser-sync": "^2.23.5"
+  }
+}
