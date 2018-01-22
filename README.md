@@ -1,7 +1,7 @@
 # Gulp Boilerplate for Landing page
-=====
+======
 
-### How to on/off browser sync?
+### 1. How to on/off browser sync?
 Stop scroll, click, form action in all devices
 
 ```
