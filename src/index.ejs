@@ -1,13 +1,22 @@
+<% var title = "Index" %>
 <!DOCTYPE html>
 <html>
 <head>
-	<% var title = "Index" %>
-	<%- include ../partials/head %>
+	<%- include ./partials/head-meta %>
+	<!-- inject:css -->
+	<link rel="stylesheet" href="assets/vendors/normalize.css">
+	<!-- endinject -->
+	<%- include ./partials/head %>
 </head>
 <body>
 	<h1>Index</h1>
 	<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Praesentium aspernatur provident animi veritatis voluptatibus ab, accusamus exercitationem numquam nam pariatur aut, atque esse libero quasi quis tempora dolores odio adipisci!</p>
 	<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Beatae optio dolor inventore, sit sapiente corrupti dolores voluptatibus earum nostrum, impedit officia, dicta? Provident nisi consectetur, aliquam vitae eius ea. Porro.</p>
-	<%- include ../partials/footer %>
+
+	<!-- inject:js -->
+	<script src="assets/vendors/jquery.min.js"></script>
+	<script src="assets/vendors/jquery.slim.min.js"></script>
+	<!-- endinject -->
+	<%- include ./partials/footer %>
 </body>
 </html>

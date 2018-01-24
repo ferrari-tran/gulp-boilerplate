@@ -4,17 +4,22 @@ var gulp 						= require('gulp'),
 	argv 						= require('yargs').argv, 					// watching when start gulp
 	inject 						= require('gulp-inject'), 					// auto add file vendor to page
 	sass 						= require('gulp-sass'), 					// compile sass to css
+	sassLint 					= require('gulp-sass-lint'), 				// check sass
+	concat 						= require('gulp-concat'), 					// concatness
+	plumber 					= require('gulp-plumber'), 					// continue compile if code is wrong syntax, ...
+	autoprefixer 				= require('gulp-autoprefixer'), 			// auto add prefix to css
+	sourcemaps 					= require('gulp-sourcemaps'), 				// add file map when minifi
+	addSrc 						= require('gulp-add-src'), 					// add link to task
 	config 						= require('./build.config.json'), 			// link file vendors
 	browserSync 				= require('browser-sync'), 					// sync all browser when run gulp
-	reload 						= browserSync.reload; 						// reload page if change
+	reload 						= browserSync.reload; 						// host review, reload page if change
 	
 var path = {
 	source: './src',
 	output: './dist',
-	vendors: './dist/vendors',
 	module: './node_modules'
 };
-
+ 
 
 /**
  * ===============================================================
@@ -22,7 +27,9 @@ var path = {
  * ===============================================================
  */
 gulp.task('ejs', () => {
-	return gulp.src(path.source + '/pages/*.ejs')
+	return gulp.src([
+			path.source + '/*.ejs'
+		])
 		.pipe(ejs({},{}, {ext: '.html'}).on('error', log))
 	    .pipe(gulp.dest(path.output))
 	    .pipe(reload({stream: true}));
@@ -35,9 +42,10 @@ gulp.task('ejs', () => {
  * ===============================================================
  */
 gulp.task('copy', () => {
-	return gulp.src(config.src)
-		.pipe(gulp.dest(path.vendors))
-		.pipe(reload({stream: true}));;
+	gulp.src(config.src)
+		.pipe(gulp.dest(path.output + '/assets/vendors'));
+	gulp.src(config.src)
+		.pipe(gulp.dest(path.source + '/assets/vendors'));
 });
 
 
@@ -48,10 +56,24 @@ gulp.task('copy', () => {
  * ===============================================================
  */
 gulp.task('inject', () => {
-	return gulp.src(path.output + '/*.html')
-		.pipe(inject(gulp.src([path.output + '/vendors/*.js', path.output + '/vendors/*.css'], { read: false }), {relative: true}))
-		.pipe(gulp.dest(path.output))
+	return gulp.src(path.source + '/*.ejs')
+		.pipe(inject(gulp.src([path.source + '/assets/vendors/*.js', path.source + '/assets/vendors/*.css'], { read: false }), {relative: true}))
+		.pipe(gulp.dest(path.source))
 		.pipe(reload({stream: true}));
+});
+
+
+/**
+ * ===============================================================
+ * Task: SASS LINT - Check Sass
+ * ===============================================================
+ */
+gulp.task('sass-lint', () => {
+	return gulp.src(path.source + '/assets/sass/**/*.s+(a|c)ss')
+		.pipe(plumber())
+		.pipe(sassLint())
+		.pipe(sassLint.format())
+		.pipe(sassLint.failOnError());
 });
 
 
@@ -61,10 +83,18 @@ gulp.task('inject', () => {
  * Task: SASS - Compile Sass
  * ===============================================================
  */
-gulp.task('compile-sass', () => {
+gulp.task('compile-sass', ['sass-lint'], () => {
 	return gulp.src(path.source + '/assets/sass/*.s+(a|c)ss')
 		.pipe(sass().on('error', sass.logError))
-		.pipe(gulp.dest(path.output + '/css'))
+		.pipe(addSrc(path.source + '/assets/css/**/*.css'))
+		.pipe(autoprefixer({
+			browsers: ['last 2 versions'],
+			cascade: false
+		}))
+		.pipe(sourcemaps.init())
+		.pipe(concat('style.css', {newLine: ';'}))
+		.pipe(sourcemaps.write('.'))
+		.pipe(gulp.dest(path.output + '/assets/css'))
 		.pipe(reload({stream: true}));
 });
 
@@ -95,9 +125,18 @@ gulp.task('watch', () => {
 });
 
 
+
+/**
+ * ===============================================================
+ * Task: BUILD - Minify files
+ * ===============================================================
+ */
+
+
+
 /**
  * ===============================================================
  * Task: DEFAULT
  * ===============================================================
  */
-gulp.task('default', ['copy', 'ejs', 'inject', 'compile-sass', 'watch']);
+gulp.task('default', ['copy', 'inject', 'ejs', 'compile-sass', 'watch']);
