@@ -3,6 +3,7 @@ var gulp 						= require('gulp'),
 	log 						= require('fancy-log'), 					// log error for ejs
 	argv 						= require('yargs').argv, 					// watching when start gulp
 	inject 						= require('gulp-inject'), 					// auto add file vendor to page
+	sass 						= require('gulp-sass'), 					// compile sass to css
 	config 						= require('./build.config.json'), 			// link file vendors
 	browserSync 				= require('browser-sync'), 					// sync all browser when run gulp
 	reload 						= browserSync.reload; 						// reload page if change
@@ -10,7 +11,7 @@ var gulp 						= require('gulp'),
 var path = {
 	source: './src',
 	output: './dist',
-	vendors: './src/assets/vendors',
+	vendors: './dist/vendors',
 	module: './node_modules'
 };
 
@@ -47,12 +48,24 @@ gulp.task('copy', () => {
  * ===============================================================
  */
 gulp.task('inject', () => {
-	let target = gulp.src(path.source + '/partials/*.ejs');
-	let sources = gulp.src([path.vendors + '/*.js', path.vendors + '/*.css'], { read: false });
-	
-	return target.pipe(inject(sources))
-		.pipe(gulp.dest(path.source + '/partials'))
-		.pipe(reload({stream: true}));;
+	return gulp.src(path.output + '/*.html')
+		.pipe(inject(gulp.src([path.output + '/vendors/*.js', path.output + '/vendors/*.css'], { read: false }), {relative: true}))
+		.pipe(gulp.dest(path.output))
+		.pipe(reload({stream: true}));
+});
+
+
+
+/**
+ * ===============================================================
+ * Task: SASS - Compile Sass
+ * ===============================================================
+ */
+gulp.task('compile-sass', () => {
+	return gulp.src(path.source + '/assets/sass/*.s+(a|c)ss')
+		.pipe(sass().on('error', sass.logError))
+		.pipe(gulp.dest(path.output + '/css'))
+		.pipe(reload({stream: true}));
 });
 
 
@@ -78,6 +91,7 @@ gulp.task('watch', () => {
 
 	gulp.watch([path.source + '/**/*.ejs'], ['ejs', 'inject']);
 	gulp.watch(['./build.config.json'], ['copy', 'inject']);
+	gulp.watch([path.source + '/assets/sass/*.s+(a|c)ss'], ['compile-sass']);
 });
 
 
@@ -86,4 +100,4 @@ gulp.task('watch', () => {
  * Task: DEFAULT
  * ===============================================================
  */
-gulp.task('default', ['copy', 'inject', 'ejs', 'watch']);
+gulp.task('default', ['copy', 'ejs', 'inject', 'compile-sass', 'watch']);
