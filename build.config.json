@@ -1,0 +1,9 @@
+{
+	"src": [
+		"node_modules/jquery/dist/jquery.min.js",
+		"node_modules/jquery/dist/jquery.min.map",
+		"node_modules/jquery/dist/jquery.slim.min.js",
+		"node_modules/jquery/dist/jquery.slim.min.map",
+		"node_modules/normalize.css/normalize.css"
+	]
+}
