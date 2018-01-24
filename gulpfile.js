@@ -10,6 +10,8 @@ var gulp 						= require('gulp'),
 	autoprefixer 				= require('gulp-autoprefixer'), 			// auto add prefix to css
 	sourcemaps 					= require('gulp-sourcemaps'), 				// add file map when minifi
 	addSrc 						= require('gulp-add-src'), 					// add link to task
+	removeEmptyLines 			= require('gulp-remove-empty-lines'), 		// remove blank lines
+	htmlBeauty 					= require('gulp-html-beautify'), 			// remake html beautifier
 	config 						= require('./build.config.json'), 			// link file vendors
 	browserSync 				= require('browser-sync'), 					// sync all browser when run gulp
 	reload 						= browserSync.reload; 						// host review, reload page if change
@@ -33,6 +35,22 @@ gulp.task('ejs', () => {
 		.pipe(ejs({},{}, {ext: '.html'}).on('error', log))
 	    .pipe(gulp.dest(path.output))
 	    .pipe(reload({stream: true}));
+});
+
+/**
+ * ===============================================================
+ * Task: HTML
+ * ===============================================================
+ */
+gulp.task('html', () => {
+	var options = {
+		indentSize: 2
+	};
+
+	return gulp.src(path.output + '/*.html')
+		.pipe(removeEmptyLines())
+		.pipe(htmlBeauty(options))
+		.pipe(gulp.dest(path.output));
 });
 
 
@@ -119,7 +137,7 @@ gulp.task('watch', () => {
 		}
 	});
 
-	gulp.watch([path.source + '/**/*.ejs'], ['ejs', 'inject']);
+	gulp.watch([path.source + '/**/*.ejs'], ['ejs', 'inject', 'html']);
 	gulp.watch(['./build.config.json'], ['copy', 'inject']);
 	gulp.watch([path.source + '/assets/sass/*.s+(a|c)ss'], ['compile-sass']);
 });
@@ -139,4 +157,4 @@ gulp.task('watch', () => {
  * Task: DEFAULT
  * ===============================================================
  */
-gulp.task('default', ['copy', 'inject', 'ejs', 'compile-sass', 'watch']);
+gulp.task('default', ['copy', 'inject', 'ejs', 'html', 'compile-sass', 'watch']);
