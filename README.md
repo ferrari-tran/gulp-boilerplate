@@ -17,7 +17,7 @@ gulp
 gulp build
 ```
 
-#### 2. How to on/off browser sync?
+### 2. How to on/off browser sync?
 Stop scroll, click, form action in all devices
 
 ```
@@ -26,5 +26,5 @@ http://localhost:8080/sync-options
 Choose options what you want to control.
 
 
-#### 3. Syntax EJS
+### 3. Syntax EJS
 [Syntax as markdown](https://github.com/mde/ejs/blob/master/docs/syntax.md)
