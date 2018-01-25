@@ -12,6 +12,11 @@ var gulp 						= require('gulp'),
 	addSrc 						= require('gulp-add-src'), 					// add link to task
 	removeEmptyLines 			= require('gulp-remove-empty-lines'), 		// remove blank lines
 	htmlBeauty 					= require('gulp-html-beautify'), 			// remake html beautifier
+	uglify 						= require('gulp-uglify'), 					// Minify JavaScript with UglifyJS3
+	esLint 						= require('gulp-esLint'), 					// Log bug for javascript
+	htmlMin 					= require('gulp-htmlmin'), 					// Minify html
+	imagemin 					= require('gulp-imagemin'), 				// Optimize images
+	pump 						= require('pump'), 							// require for uglify
 	config 						= require('./build.config.json'), 			// link file vendors
 	browserSync 				= require('browser-sync'), 					// sync all browser when run gulp
 	reload 						= browserSync.reload; 						// host review, reload page if change
@@ -19,6 +24,7 @@ var gulp 						= require('gulp'),
 var path = {
 	source: './src',
 	output: './dist',
+	build: './build',
 	module: './node_modules'
 };
  
@@ -36,6 +42,7 @@ gulp.task('ejs', () => {
 	    .pipe(gulp.dest(path.output))
 	    .pipe(reload({stream: true}));
 });
+
 
 /**
  * ===============================================================
@@ -120,6 +127,56 @@ gulp.task('compile-sass', ['sass-lint'], () => {
 
 /**
  * ===============================================================
+ * Task: JS LINT - Check javascript
+ * ===============================================================
+ */
+gulp.task('js-lint', () => {
+	return gulp.src(path.source + '/assets/js/**/*.js')
+		.pipe(esLint({
+			globals: [
+				'jQuery',
+				'$'
+			],
+			envs: [
+				'browser'
+			],
+			configFile: '.eslintrc.json'
+		}))
+		.pipe(esLint.formatEach('compact', process.stderr));
+});
+
+
+
+/**
+ * ===============================================================
+ * Task: Compile js
+ * ===============================================================
+ */
+gulp.task('compile-js', ['js-lint'], () => {
+	return gulp.src(path.source + '/assets/js/**/*.js')
+		.pipe(plumber())
+		.pipe(concat('main.js'))
+		.pipe(gulp.dest(path.output + '/assets/js'))
+		.pipe(reload({ stream: true }));
+});
+
+
+
+/**
+ * ===============================================================
+ * Task: Optimize image
+ * ===============================================================
+ */
+gulp.task('optimize-image', () => {
+	return gulp.src(path.source + '/assets/images/**/*')
+		.pipe(imagemin())
+		.pipe(gulp.dest(path.output + '/assets/images'));
+});
+
+
+
+/**
+ * ===============================================================
  * Task: Watching task when start gulp
  * ===============================================================
  */
@@ -137,18 +194,41 @@ gulp.task('watch', () => {
 		}
 	});
 
-	gulp.watch([path.source + '/**/*.ejs'], ['ejs', 'inject', 'html']);
+	gulp.watch([path.source + '/**/*.ejs'], ['ejs', 'html']);
 	gulp.watch(['./build.config.json'], ['copy', 'inject']);
 	gulp.watch([path.source + '/assets/sass/*.s+(a|c)ss'], ['compile-sass']);
+	gulp.watch([path.source + '/assets/js/**/*.js'], ['compile-js']);
 });
 
 
 
 /**
  * ===============================================================
- * Task: BUILD - Minify files
+ * Task: BUILD - Optimize files
  * ===============================================================
  */
+gulp.task('build', (callback) => {
+	// Optimize html
+	gulp.src(path.output + '/*.html')
+		.pipe(htmlMin({ collapseWhitespace: true }))
+		.pipe(gulp.dest(path.build));
+
+	// Optimize css
+	gulp.src(path.output + '/assets/css/**/*.css')
+		.pipe(concat('style.min.css'))
+		.pipe(gulp.dest(path.build + '/assets/'));
+
+	// Optimize js
+	pump([
+		gulp.src(path.output + '/assets/js/**/*.js'),
+		uglify(),
+		gulp.dest(path.build + '/assets/js')
+	], callback);
+
+	// Copy images
+	gulp.src(path.output + '/assets/images/**/*')
+		.pipe(gulp.dest(path.build + '/assets/images'));
+});
 
 
 
@@ -157,4 +237,4 @@ gulp.task('watch', () => {
  * Task: DEFAULT
  * ===============================================================
  */
-gulp.task('default', ['copy', 'inject', 'ejs', 'html', 'compile-sass', 'watch']);
+gulp.task('default', ['copy', 'inject', 'ejs', 'html', 'compile-sass', 'compile-js', 'optimize-image', 'watch']);
