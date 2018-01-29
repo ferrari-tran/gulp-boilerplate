@@ -196,7 +196,8 @@ gulp.task('watch', () => {
         }
     });
 
-    gulp.watch([path.source + '/**/*.ejs'], ['ejs', 'html']);
+    gulp.watch([path.source + '/**/*.ejs'], ['ejs']);
+    gulp.watch([path.output + '/*.html'], ['html']);
     gulp.watch(['./build.config.json'], ['copy', 'inject']);
     gulp.watch([path.source + '/assets/sass/*.s+(a|c)ss'], ['compile-sass']);
     gulp.watch([path.source + '/assets/js/**/*.js'], ['compile-js']);
