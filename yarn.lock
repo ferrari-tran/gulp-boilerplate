@@ -1078,6 +1078,12 @@ decode-uri-component@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/decode-uri-component/-/decode-uri-component-0.2.0.tgz#eb3913333458775cb84cd1a1fae062106bb87545"
 
+decomment@^0.9.0:
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/decomment/-/decomment-0.9.1.tgz#5bd96c67edc44df71115cfd83712ff04fa6cd0c9"
+  dependencies:
+    esprima "~4.0.0"
+
 decompress-tar@^3.0.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/decompress-tar/-/decompress-tar-3.1.0.tgz#217c789f9b94450efaadc5c5e537978fc333c466"
@@ -1604,7 +1610,7 @@ espree@^3.1.6, espree@^3.5.2:
     acorn "^5.2.1"
     acorn-jsx "^3.0.0"
 
-esprima@^4.0.0:
+esprima@^4.0.0, esprima@~4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/esprima/-/esprima-4.0.0.tgz#4499eddcd1110e0b218bacf2fa7f7f59f55ca804"
 
@@ -2536,6 +2542,14 @@ gulp-sourcemaps@^1.12.1:
     strip-bom "2.X"
     through2 "2.X"
     vinyl "1.X"
+
+gulp-strip-comments@^2.5.2:
+  version "2.5.2"
+  resolved "https://registry.yarnpkg.com/gulp-strip-comments/-/gulp-strip-comments-2.5.2.tgz#d97e1d8b0be205600b1a2923d4f8b6b558bfbfc6"
+  dependencies:
+    decomment "^0.9.0"
+    plugin-error "^0.1.2"
+    through2 "^2.0.3"
 
 gulp-uglify@^3.0.0:
   version "3.0.0"

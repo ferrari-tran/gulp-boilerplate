@@ -16,6 +16,7 @@ var gulp                        = require('gulp'),
     esLint                      = require('gulp-esLint'),                   // Log bug for javascript
     htmlMin                     = require('gulp-htmlmin'),                  // Minify html
     imagemin                    = require('gulp-imagemin'),                 // Optimize images
+    strip                       = require('gulp-strip-comments'),           // clear html comments
     pump                        = require('pump'),                          // require for uglify
     config                      = require('./build.config.json'),           // link file vendors
     browserSync                 = require('browser-sync'),                  // sync all browser when run gulp
@@ -214,6 +215,7 @@ gulp.task('build', (callback) => {
     // Optimize html
     gulp.src(path.output + '/*.html')
         .pipe(htmlMin({ collapseWhitespace: true }))
+        .pipe(strip())
         .pipe(gulp.dest(path.build));
 
     // Optimize css
