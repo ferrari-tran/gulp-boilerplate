@@ -74,6 +74,8 @@ gulp.task('copy', () => {
         .pipe(gulp.dest(path.source + '/assets/vendors'));
     gulp.src(path.source + '/assets/fonts/**/*')
         .pipe(gulp.dest(path.output + '/assets/fonts'));
+    gulp.src(path.source + '/assets/vendors/**/*')
+        .pipe(gulp.dest(path.output + '/assets/vendors'));
 });
 
 
@@ -112,7 +114,7 @@ gulp.task('sass-lint', () => {
  * ===============================================================
  */
 gulp.task('compile-sass', ['sass-lint'], () => {
-    return gulp.src(path.source + '/assets/sass/*.s+(a|c)ss')
+    return gulp.src(path.source + '/assets/sass/**/*.s+(a|c)ss')
         .pipe(sass().on('error', sass.logError))
         .pipe(addSrc(path.source + '/assets/css/**/*.css'))
         .pipe(autoprefixer({
@@ -200,7 +202,7 @@ gulp.task('watch', () => {
     gulp.watch([path.source + '/**/*.ejs'], ['ejs']);
     gulp.watch([path.output + '/*.html'], ['html']);
     gulp.watch(['./build.config.json'], ['copy', 'inject']);
-    gulp.watch([path.source + '/assets/sass/*.s+(a|c)ss'], ['compile-sass']);
+    gulp.watch([path.source + '/assets/sass/**/*.s+(a|c)ss'], ['compile-sass']);
     gulp.watch([path.source + '/assets/js/**/*.js'], ['compile-js']);
 });
 
